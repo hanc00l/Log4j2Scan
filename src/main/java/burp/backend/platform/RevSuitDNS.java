@@ -109,12 +109,14 @@ public class RevSuitDNS implements IBackend {
 
     @Override
     public String getNewPayload() {
-        return (Utils.getCurrentTimeMillis() + Utils.GetRandomString(5) + "." + dnsFlag + "." + rootDomain).toLowerCase();
+        //return (Utils.getCurrentTimeMillis() + Utils.GetRandomString(5) + "." + dnsFlag + "." + rootDomain).toLowerCase();
+        return (rootDomain + "/" + dnsFlag + "." + Utils.getCurrentTimeMillis() + Utils.GetRandomString(5)).toLowerCase();
     }
 
     @Override
     public boolean CheckResult(String payload) {
         try {
+            payload = payload.replaceFirst(rootDomain + "/", "");
             String resp = request(String.format("revsuit/api/record/dns?page=1&pageSize=5&order=desc&domain=%s", URLEncoder.encode(payload, "utf-8")));
             return resp.toLowerCase().contains(payload);
         } catch (Exception ex) {
@@ -144,6 +146,6 @@ public class RevSuitDNS implements IBackend {
 
     @Override
     public int[] getSupportedPOCTypes() {
-        return new int[]{IPOC.POC_TYPE_RMI, IPOC.POC_TYPE_LDAP};
+        return new int[]{IPOC.POC_TYPE_RMI, IPOC.POC_TYPE_LDAP, IPOC.POC_TYPE_DNS};
     }
 }
